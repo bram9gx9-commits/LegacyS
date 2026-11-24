@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>legacy S</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050811;--gold:#F59E0B;--cyan:#38BDF8;--txt:#e8ecf5;--mut:#8b95ad;--glass:rgba(16,24,48,.55);--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans Arabic',sans-serif;line-height:1.7;overflow-x:hidden}
+#bg{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.02em;direction:ltr;display:inline-block}
+.brand b{color:var(--gold)}
+.num{font-family:'Space Grotesk',sans-serif;direction:ltr;display:inline-block}
+.view{position:relative;z-index:1;display:none;min-height:100vh;padding:20px}
+.view.on{display:block}
+.center{display:none;place-items:center}
+.center.on{display:grid}
+.glass{background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+.tilt{transform-style:preserve-3d;transition:transform .15s ease-out,border-color .2s}
+.tilt:hover{border-color:rgba(245,158,11,.45)}
+.card{width:min(440px,100%);padding:38px 32px}
+.logo{font-size:44px;text-align:center;display:block}
+.badge{display:table;margin:10px auto 6px;font:600 11px 'Space Grotesk';letter-spacing:.18em;color:var(--gold);border:1px solid rgba(245,158,11,.5);padding:4px 14px;border-radius:99px;direction:ltr}
+.sub{text-align:center;color:var(--mut);margin-bottom:24px}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px}
+input,select,textarea{width:100%;background:rgba(5,8,17,.6);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:11px 14px;font:inherit;outline:none;transition:border .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.18)}
+.pw{position:relative}.pw button{position:absolute;left:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mut);cursor:pointer;padding:6px;font:inherit;font-size:12px}
+.btn{cursor:pointer;border:0;border-radius:12px;padding:11px 20px;font:600 15px 'IBM Plex Sans Arabic';color:#1a1000;background:linear-gradient(135deg,#FBBF24,var(--gold));box-shadow:0 8px 24px -8px rgba(245,158,11,.7);transition:transform .15s,opacity .2s}
+.btn:hover{transform:translateY(-2px)}.btn:disabled{opacity:.55;cursor:wait}
+.btn.full{width:100%;margin-top:20px}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);box-shadow:none}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:9px}
+.note{text-align:center;color:var(--mut);font-size:13px;margin-top:18px}
+.err{color:#fca5a5;font-size:13px;margin-top:10px;min-height:20px;text-align:center}
+.wrap{max-width:1180px;margin:0 auto}
+.bar{display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap;margin-bottom:26px}
+.bar .sp{flex:1}
+.pill{padding:3px 12px;border-radius:99px;font-size:12px;font-weight:600;background:rgba(56,189,248,.15);color:var(--cyan)}
+.pill.ok{background:rgba(52,211,153,.15);color:#6ee7b7}.pill.bad{background:rgba(239,68,68,.15);color:#fca5a5}
+.bell{position:relative;font-size:20px}.bell i{position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+h1{font-size:clamp(26px,4vw,40px);line-height:1.3}
+h2{font-size:22px;margin:38px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.stat{padding:22px}.stat small{color:var(--mut);display:block}.stat .v{font-size:30px;font-weight:700;margin-top:6px;color:var(--gold)}
+.stat:nth-child(even) .v{color:var(--cyan)}
+.offer{padding:24px;display:flex;flex-direction:column;gap:10px}
+.tag{align-self:flex-start;font-size:12px;padding:2px 12px;border-radius:99px;background:rgba(245,158,11,.14);color:var(--gold)}
+.offer p{color:var(--mut);flex:1}
+.form{padding:26px;max-width:640px}
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99;display:grid;gap:8px}
+.toast{padding:12px 22px;border-radius:12px;background:#0d1530;border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.6);animation:in .25s}
+.toast.ok{border-color:#34d399}.toast.bad{border-color:#ef4444}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.empty{color:var(--mut);padding:30px;text-align:center}
+@media(max-width:560px){.card{padding:28px 20px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="toasts"></div>
+
+<!-- Client login -->
+<section id="v-login" class="view center on">
+  <div class="glass card tilt">
+    <span class="logo brand">legacy <b>S</b></span>
+    <span class="badge">VIP &amp; AUTHORIZED ACCESS</span>
+    <p class="sub">بوابة الأعضاء والعملاء المعتمدين</p>
+    <label for="l-email">البريد الإلكتروني</label>
+    <input id="l-email" type="email" dir="ltr" autocomplete="username" placeholder="name@example.com">
+    <label for="l-pass">رمز الدخول</label>
+    <div class="pw"><input id="l-pass" type="password" dir="ltr" autocomplete="current-password" placeholder="••••••••"><button type="button" id="l-eye">إظهار</button></div>
+    <div class="err" id="l-err"></div>
+    <button class="btn full" id="l-btn">تسجيل الدخول</button>
+    <p class="note">يتم إنشاء الحسابات وتفعيلها حصرياً من طرف الإدارة</p>
+  </div>
+</section>
+
+<!-- Client dashboard -->
+<section id="v-dash" class="view">
+  <div class="wrap">
+    <div class="glass bar">
+      <span class="brand" style="font-size:24px">legacy <b>S</b></span>
+      <span class="sp"></span>
+      <strong id="d-name"></strong><span class="pill" id="d-status"></span>
+      <span class="bell" title="الإشعارات">🔔<i id="d-dot" hidden></i></span>
+      <button class="btn ghost sm" id="d-out">تسجيل الخروج</button>
+    </div>
+    <h1>مرحباً، <span id="d-hello" style="color:var(--gold)"></span></h1>
+    <p style="color:var(--mut);max-width:560px">هذه نظرة سريعة على حسابك وعروضك الحالية. للطلبات والاستفسارات استخدم النموذج أسفل الصفحة.</p>
+    <div class="grid" style="margin-top:26px" id="d-stats"></div>
+    <h2>العروض والخدمات النشطة</h2>
+    <div class="grid" id="d-offers"></div>
+    <h2>رسالة / طلب مباشر</h2>
+    <div class="glass form tilt" id="msg-form">
+      <label for="m-sub">الموضوع</label><input id="m-sub">
+      <label for="m-body">الرسالة</label><textarea id="m-body" rows="5"></textarea>
+      <button class="btn full" id="m-btn">إرسال إلى الإدارة</button>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL="https://ggfmghtftzvidsehmhst.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_-rit4wx0v1xYJRic_tsuMg_iXaJQ0Qw";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate=d=>new Date(d).toLocaleString('ar-MA',{dateStyle:'medium',timeStyle:'short'});
+const isBlocked=st=>/موقوف|غير مفعل|suspend|inactive/i.test(String(st??''));
+
+function toast(msg,type='ok'){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;$('toasts').appendChild(t);setTimeout(()=>t.remove(),3200)}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0)}
+async function busy(btn,label,fn){const o=btn.textContent;btn.disabled=true;btn.textContent=label;try{return await fn()}finally{btn.disabled=false;btn.textContent=o}}
+function attachTilt(root=document){root.querySelectorAll('.tilt').forEach(el=>{if(el._t)return;el._t=1;
+  el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(800px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateZ(6px)`});
+  el.addEventListener('pointerleave',()=>el.style.transform='')})}
+
+/* ---------- Client login ---------- */
+let client=null;
+$('l-eye').onclick=()=>{const p=$('l-pass'),h=p.type==='password';p.type=h?'text':'password';$('l-eye').textContent=h?'إخفاء':'إظهار'};
+[$('l-email'),$('l-pass')].forEach(i=>i.addEventListener('keydown',e=>e.key==='Enter'&&$('l-btn').click()));
+$('l-btn').onclick=()=>busy($('l-btn'),'جارٍ التحقق...',async()=>{
+  const email=$('l-email').value.trim(),code=$('l-pass').value.trim();$('l-err').textContent='';
+  if(!email||!code){$('l-err').textContent='أدخل البريد الإلكتروني ورمز الدخول.';return}
+  const {data,error}=await sb.from('clients').select('*').eq('email',email).eq('password_code',code).limit(1);
+  if(error){$('l-err').textContent='تعذّر الاتصال بالخادم. حاول مرة أخرى.';toast('خطأ في الاتصال: '+error.message,'bad');return}
+  if(!data||!data.length){$('l-err').textContent='البريد الإلكتروني أو الرمز غير صحيح.';return}
+  const c=data[0];
+  if(isBlocked(c.status)){$('l-err').textContent='هذا الحساب '+c.status+'. تواصل مع الإدارة لإعادة تفعيله.';return}
+  localStorage.setItem('legacyS_client',JSON.stringify(c));openDash(c);toast('أهلاً بك، '+c.full_name)});
+
+/* ---------- Dashboard ---------- */
+const FALLBACK=[{tag:'حصري',title:'خدمة كبار العملاء',description:'مدير حساب مخصص يتابع طلباتك على مدار الساعة.'},{tag:'جديد',title:'مكافآت العضوية',description:'ارتقِ بمستوى عضويتك واحصل على مزايا إضافية.'},{tag:'دعم',title:'استشارة خاصة',description:'تواصل مع فريقنا للحصول على إرشاد مباشر حسب احتياجك.'}];
+async function openDash(c){
+  client=c;show('v-dash');
+  $('d-name').textContent=c.full_name;$('d-hello').textContent=c.full_name;
+  const ok=!isBlocked(c.status);
+  const st=$('d-status');st.textContent=c.status;st.className='pill '+(ok?'ok':'bad');
+  const S=[['الرصيد / النقاط',`<span class="num">${esc(c.balance)}</span>`],['مستوى العضوية',esc(c.membership_level)],['حالة الحساب',esc(c.status)],['حالة الطلبات',esc(c.orders_status)]];
+  $('d-stats').innerHTML=S.map(([k,v])=>`<div class="glass stat tilt"><small>${k}</small><div class="v">${v}</div></div>`).join('');
+  $('d-offers').innerHTML='<div class="empty">جارٍ تحميل العروض...</div>';
+  const {data,error}=await sb.from('offers').select('*').eq('is_active',true).order('created_at',{ascending:false});
+  if(error)toast('تعذّر تحميل العروض','bad');
+  const list=(data&&data.length)?data:FALLBACK;
+  $('d-dot').hidden=!(data&&data.length);
+  $('d-offers').innerHTML=list.map((o,i)=>`<div class="glass offer tilt"><span class="tag">${esc(o.tag)}</span><h3>${esc(o.title)}</h3><p>${esc(o.description)}</p><button class="btn sm" data-i="${i}">طلب / استفسار</button></div>`).join('');
+  $('d-offers').querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=list[b.dataset.i];$('m-sub').value='استفسار عن: '+o.title;$('m-body').value='مرحباً، أرغب في الاستفسار عن "'+o.title+'".';$('msg-form').scrollIntoView({behavior:'smooth',block:'center'});$('m-body').focus()});
+  attachTilt($('v-dash'));
+}
+$('d-out').onclick=()=>{localStorage.removeItem('legacyS_client');client=null;show('v-login');toast('تم تسجيل الخروج')};
+$('m-btn').onclick=()=>busy($('m-btn'),'جارٍ الإرسال...',async()=>{
+  const subject=$('m-sub').value.trim(),content=$('m-body').value.trim();
+  if(!subject||!content){toast('أدخل الموضوع ونص الرسالة','bad');return}
+  const {error}=await sb.from('messages').insert({client_name:client.full_name,client_email:client.email,subject,content,is_read:false});
+  if(error){toast('تعذّر الإرسال: '+error.message,'bad');return}
+  $('m-sub').value='';$('m-body').value='';toast('تم إرسال رسالتك إلى الإدارة')});
+
+/* ---------- 3D background ---------- */
+(function(){
+  const cv=$('bg'),r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));
+  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(60,1,.1,200);cam.position.set(0,14,34);cam.lookAt(0,0,0);
+  const N=70,pos=new Float32Array(N*N*3),col=new Float32Array(N*N*3),g=new THREE.BufferGeometry();
+  const gold=new THREE.Color('#F59E0B'),cy=new THREE.Color('#38BDF8');
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const k=(i*N+j)*3;pos[k]=(i-N/2)*1.2;pos[k+2]=(j-N/2)*1.2;const c=cy.clone().lerp(gold,j/N);col[k]=c.r;col[k+1]=c.g;col[k+2]=c.b}
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const pts=new THREE.Points(g,new THREE.PointsMaterial({size:.16,vertexColors:true,transparent:true,opacity:.75,depthWrite:false}));sc.add(pts);
+  const ico=new THREE.Mesh(new THREE.IcosahedronGeometry(5,1),new THREE.MeshBasicMaterial({color:0xF59E0B,wireframe:true,transparent:true,opacity:.18}));ico.position.set(0,9,-10);sc.add(ico);
+  let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+  function size(){r.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
+  const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function frame(t){t*=.001;const a=g.attributes.position.array;
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){const k=(i*N+j)*3;a[k+1]=Math.sin(i*.35+t)*1.2+Math.cos(j*.3+t*.8)*1.2}
+    g.attributes.position.needsUpdate=true;ico.rotation.x=t*.2;ico.rotation.y=t*.3;
+    cam.position.x+=((mx*14)-cam.position.x)*.04;cam.position.y+=((14-my*6)-cam.position.y)*.04;cam.lookAt(0,0,0);
+    r.render(sc,cam);if(!still)requestAnimationFrame(frame)}
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- Boot ---------- */
+attachTilt();
+try{const s=JSON.parse(localStorage.getItem('legacyS_client')||'null');if(s&&s.full_name)openDash(s)}catch(e){}
+</script>
+</body>
+</html>
